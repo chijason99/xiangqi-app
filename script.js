@@ -665,12 +665,12 @@ FENinput.addEventListener('click', function(){
         isRed = true
         currentTurn = (isRed ? 'red' : 'black');
         showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
-        counter = parseInt(lastItem[5])*4;
+        counter = parseInt(lastItem[5])*4 + 2;
     }else{
         isRed = false
         currentTurn = (isRed ? 'red' : 'black');
         showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
-        counter = parseInt(lastItem[5])*4 + 2;
+        counter = (parseInt(lastItem[5])+1)*4 - 2;
     };
     FEN.value = '';
 });
