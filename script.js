@@ -140,7 +140,7 @@ function checkDanger(row,column){
         const piecesAbove = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) > row);
         piecesAbove.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-row')) - parseInt(b.firstElementChild.getAttribute('data-row'))) //from bottom to top
         if (piecesAbove.length > 0) {
-            if(piecesAbove[0].firstElementChild.dataset.color == currentPiece.color){
+            if(piecesAbove[0].firstElementChild.dataset.color != currentPiece.color){
                 if(piecesAbove[0].firstElementChild.dataset.piece == 'rook' || piecesAbove[0].firstElementChild.dataset.piece == 'king'){
                     return true
                 };
@@ -151,7 +151,7 @@ function checkDanger(row,column){
                 };
             };
             if(piecesAbove.length > 1){
-                if(piecesAbove[1].firstElementChild.dataset.color == currentPiece.color){
+                if(piecesAbove[1].firstElementChild.dataset.color != currentPiece.color){
                     if(piecesAbove[1].firstElementChild.dataset.piece == 'cannon'){
                         return true
                     };
@@ -164,7 +164,7 @@ function checkDanger(row,column){
             const piecesBelow = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) < row);
             piecesBelow.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-row')) - parseInt(a.firstElementChild.getAttribute('data-row'))) //from bottom to top
             if (piecesBelow.length > 0) {
-                if(piecesBelow[0].firstElementChild.dataset.color == currentPiece.color){
+                if(piecesBelow[0].firstElementChild.dataset.color != currentPiece.color){
                     if(piecesBelow[0].firstElementChild.dataset.piece == 'rook' || piecesBelow[0].firstElementChild.dataset.piece == 'king'){
                         return true
                     };
@@ -175,7 +175,7 @@ function checkDanger(row,column){
                     };
                 };
                 if(piecesBelow.length > 1){
-                    if(piecesBelow[1].firstElementChild.dataset.color == currentPiece.color){
+                    if(piecesBelow[1].firstElementChild.dataset.color != currentPiece.color){
                         if(piecesBelow[1].firstElementChild.dataset.piece == 'cannon'){
                             return true
                         };
@@ -188,7 +188,7 @@ function checkDanger(row,column){
             const piecesLeft = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) < column);
             piecesLeft.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-column')) - parseInt(a.firstElementChild.getAttribute('data-column'))); // sort from right to left
             if (piecesLeft.length > 0) {
-                if(piecesLeft[0].firstElementChild.dataset.color == currentPiece.color){
+                if(piecesLeft[0].firstElementChild.dataset.color != currentPiece.color){
                     if(piecesLeft[0].firstElementChild.dataset.piece == 'rook'){
                         return true
                     };
@@ -199,7 +199,7 @@ function checkDanger(row,column){
                     };
                 };
                 if(piecesLeft.length > 1){
-                    if(piecesLeft[1].firstElementChild.dataset.color == currentPiece.color){
+                    if(piecesLeft[1].firstElementChild.dataset.color != currentPiece.color){
                         if(piecesLeft[1].firstElementChild.dataset.piece == 'cannon'){
                             return true
                         };
@@ -212,7 +212,7 @@ function checkDanger(row,column){
             const piecesRight = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) > column);
             piecesRight.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-column')) - parseInt(b.firstElementChild.getAttribute('data-column'))); // sort from left to right
             if (piecesRight.length > 0) {
-                if(piecesRight[0].firstElementChild.dataset.color == currentPiece.color){
+                if(piecesRight[0].firstElementChild.dataset.color != currentPiece.color){
                     if(piecesRight[0].firstElementChild.dataset.piece == 'rook'){
                         return true
                     };
@@ -223,7 +223,7 @@ function checkDanger(row,column){
                     };
                 };
                 if(piecesRight.length > 1){
-                    if(piecesRight[1].firstElementChild.dataset.color == currentPiece.color){
+                    if(piecesRight[1].firstElementChild.dataset.color != currentPiece.color){
                         if(piecesRight[1].firstElementChild.dataset.piece == 'cannon'){
                             return true
                         };
@@ -238,7 +238,7 @@ function checkDanger(row,column){
         const bottomRightObstacle = document.querySelector(`.square[data-row="${row - 1 }"][data-column="${column + 1}"]`)
         function checkKnightSquare(x,y){
             const target = document.querySelector(`.square[data-row="${x}"][data-column="${y}"]`)
-            if(target.hasChildNodes() && target.firstElementChild.dataset.piece == 'knight' && target.firstElementChild.dataset.color == currentPiece.color){
+            if(target.hasChildNodes() && target.firstElementChild.dataset.piece == 'knight' && target.firstElementChild.dataset.color != currentPiece.color){
                 return true
             }else{
                 return false
@@ -685,12 +685,54 @@ function setAvailablePath(name){
             };
             break;
     }
-    let availableSquare = Array.from(document.querySelectorAll('.square.available'))     // remove the green color if there was a teammate
+    let availableSquare = Array.from(document.querySelectorAll('.square.available'));
     availableSquare.forEach(item => {
         if(item.hasChildNodes()){
-            if(item.firstElementChild.dataset.color == currentPiece.color){
+            if(item.firstElementChild.dataset.color == currentPiece.color){   // remove the green color if there was a teammate
                 item.classList.remove('available');
+            };
+            if(item.firstElementChild.dataset.color != currentPiece.color){
+                const target = {};
+                const king = square.find(sqr => sqr.hasChildNodes() && sqr.firstElementChild.dataset.piece == 'king' && sqr.firstElementChild.dataset.color == currentPiece.color)
+                target.piece = item.firstElementChild.dataset.piece;
+                target.color = item.firstElementChild.dataset.color;
+                target.row = parseInt(item.firstElementChild.dataset.row);
+                target.column = parseInt(item.firstElementChild.dataset.column);
+                removePiece(target.row, target.column);
+                removePiece(currentPiece.row, currentPiece.column)
+                createPiece(currentPiece.piece, currentPiece.color,target.row, target.column);
+                if(currentPiece.piece != 'king'){
+                    if(checkDanger(parseInt(king.dataset.row), parseInt(king.dataset.column))){
+                        item.classList.remove('available')
+                    };
+                }else if(currentPiece.piece == 'king'){
+                    if(checkDanger(target.row, target.column)){
+                        item.classList.remove('available')
+                    };
+                }
+                removePiece(target.row, target.column);
+                createPiece(target.piece, target.color, target.row, target.column);
+                createPiece(currentPiece.piece, currentPiece.color, currentPiece.row, currentPiece.column)
             }
+        }else if(!item.hasChildNodes()){
+            const target = {};
+            target.row = parseInt(item.dataset.row);
+            target.column = parseInt(item.dataset.column);
+            const king = square.find(sqr => sqr.hasChildNodes() && sqr.firstElementChild.dataset.piece == 'king' && sqr.firstElementChild.dataset.color == currentPiece.color)
+            removePiece(currentPiece.row, currentPiece.column);
+            createPiece(currentPiece.piece, currentPiece.color,target.row, target.column);
+            if(currentPiece.piece != 'king'){
+                if(checkDanger(parseInt(king.dataset.row), parseInt(king.dataset.column))){
+                    item.classList.remove('available')
+                };
+            }else if(currentPiece.piece == 'king'){
+                if(checkDanger(target.row, target.column)){
+                    item.classList.remove('available')
+                };
+            }
+            
+            removePiece(target.row, target.column);
+            createPiece(currentPiece.piece, currentPiece.color, currentPiece.row, currentPiece.column)
         }
     });
 }
