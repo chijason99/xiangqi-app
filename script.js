@@ -661,16 +661,26 @@ FENinput.addEventListener('click', function(){
         })
     };
 
-    if(lastItem[1] == 'w'){
+    if(lastItem[1] == 'w' || !lastItem[1]){
         isRed = true
         currentTurn = (isRed ? 'red' : 'black');
-        showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
-        counter = parseInt(lastItem[5])*4 + 2;
+        if(lastItem[5]){
+            showTurn.textContent =  `Round ${parseInt(lastItem[5])+1} : ${currentTurn} to move`;
+            counter = parseInt(lastItem[5])*4;
+        }else{
+            showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
+        }
+
     }else{
         isRed = false
         currentTurn = (isRed ? 'red' : 'black');
-        showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
-        counter = (parseInt(lastItem[5])+1)*4 - 2;
+        if(lastItem[5]){
+            showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
+            counter = (parseInt(lastItem[5])+1)*4 - 2;
+        }else{
+            showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
+        }
     };
     FEN.value = '';
 });
+
