@@ -42,7 +42,7 @@ function removeBlueColor(){
     currentSquare.forEach(item=>{
         item.classList.remove('current')
     });
-}
+};
 // creating a piece
 function createPiece(name, color, row, column) {
     const img = document.createElement('img')
@@ -63,20 +63,47 @@ function setCurrentPieceInfo(piece){  // record the data for the first click
     currentPiece.column = parseInt(piece.dataset.column);
     removeBlueColor();
     document.querySelector(`.square[data-row="${currentPiece.row}"][data-column="${currentPiece.column}"]`).classList.add('current')
-}
+};
+
 function setDestinationInfo(piece){ // record the data for second click
     destination.row = piece.dataset.row;
     destination.column = piece.dataset.column;
-}
+};
+
 function removePiece(row,column){ // remove the piece from the square
     const target = document.querySelector(`img[data-row = "${row}"][data-column = "${column}" ]`)
     target.remove();
-}
+};
+
 function markAvailableSpots(row,column){ // mark the square green if it is available for the piece
     document.querySelector(`.square[data-row="${row}"][data-column="${column}"]`).classList.add('available')
-}
+};
+
 function removeAvailableSpots(row,column){ // mark the square green if it is available for the piece
     document.querySelector(`.square[data-row="${row}"][data-column="${column}"]`).classList.remove('available')
+};
+
+function checkGameOver(){
+    let validMoves = 0
+    const pieces = square.filter(item => item.hasChildNodes() && item.firstElementChild.dataset.color != currentTurn);
+    pieces.forEach(item => {
+        currentPiece.piece = item.firstElementChild.dataset.piece;
+        currentPiece.color = item.firstElementChild.dataset.color;
+        currentPiece.row = parseInt(item.firstElementChild.dataset.row);
+        currentPiece.column = parseInt(item.firstElementChild.dataset.column);
+        setAvailablePath(item.firstElementChild.dataset.piece);
+        validMoves += Array.from(document.querySelectorAll('.square.available')).length;
+
+    });
+    for(const info in currentPiece){
+        delete currentPiece[info]
+    };
+    console.log(validMoves)
+    if(validMoves == 0){
+        return true
+    }else{
+        return false
+    }
 }
 
 const currentPiece = {}
@@ -101,21 +128,33 @@ function movePieces(){
                                 removePiece(currentPiece.row,currentPiece.column);  // remove original piece
                                 removePiece(destination.row,destination.column);    // remove piece at destination(capture)
                                 createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column)
-                                removeGreenColor(); 
-                                removeBlueColor();
-                                isChecked();
-                                counter+=1; 
-                                setNextTurn();
+                                if(checkGameOver()){
+                                    showTurn.textContent = `Game over, ${currentTurn.toUpperCase()} wins`
+                                    removeBlueColor();
+                                    return
+                                }else{
+                                    removeGreenColor(); 
+                                    removeBlueColor();
+                                    counter+=1;
+                                    setNextTurn();
+                                }; 
+
                             }
                         }else if(!sqr.hasChildNodes() && sqr.classList.contains('available')){ // if there is no piece and the square is available
                             setDestinationInfo(e1.target);
                             removePiece(currentPiece.row,currentPiece.column);  // remove original piece
                             createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column);
-                            removeGreenColor();
-                            removeBlueColor();
-                            isChecked();
-                            counter+=1; 
-                            setNextTurn();
+                            if(checkGameOver()){
+                                showTurn.textContent = `Game over, ${currentTurn.toUpperCase()} wins`
+                                removeBlueColor();
+                                square.forEach(item => item.classList.add('disabled'))
+                                return
+                            }else{
+                                removeGreenColor(); 
+                                removeBlueColor();
+                                counter+=1;
+                                setNextTurn();
+                            }; 
                         }else if(!sqr.hasChildNodes() && !sqr.classList.contains('available')){ // click on somewhere else on the board
                             removeGreenColor();
                             removeBlueColor();
@@ -292,28 +331,7 @@ function checkDanger(row,column){
                 }
             };
         };
-}
-function isChecked(){
-    if(isRed){
-        const blackKing = square.find(item => item.hasChildNodes() && item.firstElementChild.dataset.piece == 'king' && item.firstElementChild.dataset.color == 'black')
-        if (checkDanger(parseInt(blackKing.firstElementChild.dataset.row), parseInt(blackKing.firstElementChild.dataset.column))){
-            console.log('black king is being attacked')
-        }
-    }else{
-        const redKing = square.find(item => item.hasChildNodes() && item.firstElementChild.dataset.piece == 'king' && item.firstElementChild.dataset.color == 'red')
-        if(checkDanger(parseInt(redKing.firstElementChild.dataset.row), parseInt(redKing.firstElementChild.dataset.column))){
-            console.log('red king is being attacked')
-        }
-    }
-}
-
-
-function markDanger(row, column){
-    document.querySelector(`.square[data-row="${row}"][data-column="${column}"]`).classList.add('danger')
-}
-
-
-
+};
 
 function setAvailablePath(name){
     const palace = {
@@ -674,7 +692,7 @@ function setAvailablePath(name){
             if(item.firstElementChild.dataset.color == currentPiece.color){   // remove the green color if there was a teammate
                 item.classList.remove('available');
             };
-            if(item.firstElementChild.dataset.color != currentPiece.color){
+            if(item.firstElementChild.dataset.color != currentPiece.color){ // if the available move is to capture pieces
                 const target = {};
                 const king = square.find(sqr => sqr.hasChildNodes() && sqr.firstElementChild.dataset.piece == 'king' && sqr.firstElementChild.dataset.color == currentPiece.color)
                 target.piece = item.firstElementChild.dataset.piece;
@@ -683,13 +701,13 @@ function setAvailablePath(name){
                 target.column = parseInt(item.firstElementChild.dataset.column);
                 removePiece(target.row, target.column);
                 removePiece(currentPiece.row, currentPiece.column)
-                createPiece(currentPiece.piece, currentPiece.color,target.row, target.column);
+                createPiece(currentPiece.piece, currentPiece.color,target.row, target.column);     // simulate what happen after the move
                 if(currentPiece.piece != 'king'){
                     if(checkDanger(parseInt(king.dataset.row), parseInt(king.dataset.column))){
-                        item.classList.remove('available')
+                        item.classList.remove('available')            // remove the available spots if our king will be captured after the move
                     };
                 }else if(currentPiece.piece == 'king'){
-                    if(checkDanger(target.row, target.column)){
+                    if(checkDanger(target.row, target.column)){    // if we want to move the king, then the king would be in the new square
                         item.classList.remove('available')
                     };
                 }
@@ -716,7 +734,7 @@ function setAvailablePath(name){
             
             removePiece(target.row, target.column);
             createPiece(currentPiece.piece, currentPiece.color, currentPiece.row, currentPiece.column)
-        }
+        };
     });
 }
 
