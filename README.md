@@ -1,9 +1,9 @@
 # xiangqi-app
 A xiangqi app written in HTML, CSS and vanilla JS
 
-Functions included:　movement of the pieces, reading FEN, generating FEN, check for checks 
+Functions included:　movement of the pieces(illegal moves disallowed), reading FEN, generating FEN, check for checks 
 
-Functions to be added: checkmate, illegal moves, game record 
+Functions to be added: checkmate, game record 
 
 You can visit the site at https://chijason99.github.io/xiangqi-app/ 
 
