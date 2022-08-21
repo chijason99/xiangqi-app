@@ -106,10 +106,20 @@ p{
     padding: 10px;
 }
 
-.FENreader{
+.FEN{
     width: 65%;
 }
 
-.FENreader input{
+.FEN input{
     width: 80%;
+    margin: 10px 5px;
+    padding: 5px;
+}
+
+.FEN button{
+    padding: 5px;
+}
+
+.FEN button:hover{
+    cursor: pointer;
 }
