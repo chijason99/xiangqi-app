@@ -478,14 +478,6 @@ function setAvailablePath(name){
                     //move downwards
                     markAvailableSpots(currentPiece.row-1, currentPiece.column)
                 };
-                const sameColumn = Array.from(document.querySelectorAll(`.square[data-column="${currentPiece.column}"]`));
-                const aboveRedKing = sameColumn.filter(item => parseInt(item.dataset.row) > currentPiece.row).sort((a,b) => parseInt(a.getAttribute('data-row')) - parseInt(b.getAttribute('data-row')));
-                const piecesAboveRedKing = aboveRedKing.filter(item => item.hasChildNodes())
-                if(piecesAboveRedKing.length == 1 && piecesAboveRedKing[0].firstElementChild.dataset.piece == 'king'){
-                    markAvailableSpots(piecesAboveRedKing[0].firstElementChild.dataset.row, piecesAboveRedKing[0].firstElementChild.dataset.column)
-                }else if(piecesAboveRedKing.length > 1 && piecesAboveRedKing[0].firstElementChild.dataset.piece == 'king'){
-                    markAvailableSpots(piecesAboveRedKing[0].firstElementChild.dataset.row, piecesAboveRedKing[0].firstElementChild.dataset.column)
-                }
             }else if(currentPiece.color == 'black'){
                 if(currentPiece.row < 10){  // if the king is at 1st or 2nd floor
                     //move upwards
@@ -495,16 +487,7 @@ function setAvailablePath(name){
                     //move downwards
                     markAvailableSpots(currentPiece.row-1, currentPiece.column)
                 };
-                const sameColumn = Array.from(document.querySelectorAll(`.square[data-column="${currentPiece.column}"]`));
-                const belowBlackKing = sameColumn.filter(item => parseInt(item.dataset.row) < currentPiece.row).sort((a,b) => parseInt(b.getAttribute('data-row')) - parseInt(a.getAttribute('data-row')));
-                const piecesBelowBlackKing = belowBlackKing.filter(item => item.hasChildNodes())
-                if(piecesBelowBlackKing.length == 1 && piecesBelowBlackKing[0].firstElementChild.dataset.piece == 'king'){
-                    markAvailableSpots(piecesBelowBlackKing[0].firstElementChild.dataset.row, piecesBelowBlackKing[0].firstElementChild.dataset.column)
-                }else if(piecesBelowBlackKing.length > 1 && piecesBelowBlackKing[0].firstElementChild.dataset.piece == 'king'){
-                    markAvailableSpots(piecesBelowBlackKing[0].firstElementChild.dataset.row, piecesBelowBlackKing[0].firstElementChild.dataset.column)
-                }
             }
-            checkDanger(currentPiece.row, currentPiece.column);
             ;
             break;
         case 'rook':
