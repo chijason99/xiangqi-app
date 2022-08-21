@@ -921,7 +921,7 @@ function init() {
     isRed = true;
     currentTurn = (isRed ? 'red' : 'black');
     showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
-    FENoutput.value = "";
+    FENoutput.value = '';
 }
 
 init();
