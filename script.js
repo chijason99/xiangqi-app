@@ -55,54 +55,6 @@ function createPiece(name, color, row, column) {
     destination[0].appendChild(img)
 }
 
-function init() {
-    removeGreenColor();
-    removeBlueColor();
-    square.forEach(item => {
-        if(item.hasChildNodes()){
-            removePiece(item.dataset.row, item.dataset.column)
-        }
-    });
-    createPiece('rook', 'red', 1, 1);
-    createPiece('rook', 'red', 1, 9);
-    createPiece('rook', 'black', 10, 1);
-    createPiece('rook', 'black', 10, 9);
-    createPiece('knight', 'red', 1, 2)
-    createPiece('knight', 'red', 1, 8)
-    createPiece('knight', 'black', 10, 2)
-    createPiece('knight', 'black', 10, 8)
-    createPiece('pawn','red',4,1)
-    createPiece('pawn','red',4,3)
-    createPiece('pawn','red',4,5)
-    createPiece('pawn','red',4,7)
-    createPiece('pawn','red',4,9)
-    createPiece('pawn','black',7,1)
-    createPiece('pawn','black',7,3)
-    createPiece('pawn','black',7,5)
-    createPiece('pawn','black',7,7)
-    createPiece('pawn','black',7,9)
-    createPiece('cannon','red',3,2)
-    createPiece('cannon','red',3,8)
-    createPiece('cannon','black',8,2)
-    createPiece('cannon','black',8,8)
-    createPiece('bishop','red',1,3)
-    createPiece('bishop','red',1,7)
-    createPiece('bishop','black',10,3)
-    createPiece('bishop','black',10,7)
-    createPiece('advisor','red',1,4)
-    createPiece('advisor','red',1,6)
-    createPiece('advisor','black',10,4)
-    createPiece('advisor','black',10,6)
-    createPiece('king','red',1,5)
-    createPiece('king','black',10,5)
-    counter = 4;
-    isRed = true;
-    currentTurn = (isRed ? 'red' : 'black');
-    showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
-}
-
-init();
-
 const initButton = document.querySelector('#startPos');
 
 initButton.addEventListener('click',init);
@@ -746,3 +698,52 @@ genFEN.addEventListener('click',function(){
     FENoutput.value = FEN;
     console.log(rowFEN,FEN);
 })
+
+function init() {
+    removeGreenColor();
+    removeBlueColor();
+    square.forEach(item => {
+        if(item.hasChildNodes()){
+            removePiece(item.dataset.row, item.dataset.column)
+        }
+    });
+    createPiece('rook', 'red', 1, 1);
+    createPiece('rook', 'red', 1, 9);
+    createPiece('rook', 'black', 10, 1);
+    createPiece('rook', 'black', 10, 9);
+    createPiece('knight', 'red', 1, 2)
+    createPiece('knight', 'red', 1, 8)
+    createPiece('knight', 'black', 10, 2)
+    createPiece('knight', 'black', 10, 8)
+    createPiece('pawn','red',4,1)
+    createPiece('pawn','red',4,3)
+    createPiece('pawn','red',4,5)
+    createPiece('pawn','red',4,7)
+    createPiece('pawn','red',4,9)
+    createPiece('pawn','black',7,1)
+    createPiece('pawn','black',7,3)
+    createPiece('pawn','black',7,5)
+    createPiece('pawn','black',7,7)
+    createPiece('pawn','black',7,9)
+    createPiece('cannon','red',3,2)
+    createPiece('cannon','red',3,8)
+    createPiece('cannon','black',8,2)
+    createPiece('cannon','black',8,8)
+    createPiece('bishop','red',1,3)
+    createPiece('bishop','red',1,7)
+    createPiece('bishop','black',10,3)
+    createPiece('bishop','black',10,7)
+    createPiece('advisor','red',1,4)
+    createPiece('advisor','red',1,6)
+    createPiece('advisor','black',10,4)
+    createPiece('advisor','black',10,6)
+    createPiece('king','red',1,5)
+    createPiece('king','black',10,5)
+    counter = 4;
+    isRed = true;
+    currentTurn = (isRed ? 'red' : 'black');
+    showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
+    FENoutput = "";
+}
+
+init();
