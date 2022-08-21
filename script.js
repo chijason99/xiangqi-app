@@ -690,7 +690,59 @@ FENinput.addEventListener('click', function(){
 
 });
 
-const FENoutput = document.querySelector('#genFEN')
-FENoutput.addEventListener('click',function(){
-    console.log('FENoutput');
+const genFEN = document.querySelector('#genFEN')
+const FENoutput = document.querySelector('#FENoutput')
+genFEN.addEventListener('click',function(){
+    const rowFEN = {};
+    function extractPiece(piece,color){
+        const name = piece.split('');
+        if(piece == 'knight'){
+            if(color == 'red'){
+                return name[1].toUpperCase();
+
+            }else{
+                return name[1]
+
+            }
+        }else{
+            if(color == 'red'){
+                return name[0].toUpperCase();
+
+            }else{
+                return name[0]
+
+            }
+        }
+    }
+    for(let i = 10 ; i > 0 ; i--){
+        rowFEN[`row${i}`] = []
+    };
+    rowFEN.info = [];
+    square.forEach(item => {
+        let itemRow = rowFEN[`row${parseInt(item.dataset.row)}`];
+            if(item.hasChildNodes()){
+                itemRow.push(extractPiece(item.firstElementChild.dataset.piece,item.firstElementChild.dataset.color))
+            }else{
+                if(typeof itemRow[itemRow.length - 1] != "number"){
+                    itemRow.push(1)
+                }else if(typeof itemRow[itemRow.length - 1] == "number"){
+                    itemRow[itemRow.length - 1] += 1;
+                }
+            }
+    })
+    let FEN = [];
+    for(let i = 10 ; i > 0 ; i --){
+        rowFEN[`row${i}`] = [rowFEN[`row${i}`].join('')];
+        FEN.push(rowFEN[`row${i}`])
+    };
+    if(currentTurn == 'red'){
+        rowFEN.info.push(' w');
+        FEN[9] = [FEN[9] + ' w']
+    }else if(currentTurn == 'black'){
+        rowFEN.info.push(' b');
+        FEN[9] = [FEN[9]+ ' b']
+    }
+    FEN = FEN.join('/')
+    FENoutput.value = FEN;
+    console.log(rowFEN,FEN);
 })
