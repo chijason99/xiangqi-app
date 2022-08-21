@@ -678,7 +678,7 @@ FENinput.addEventListener('click', function(){
             showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
             counter = (parseInt(lastItem[5])+1)*4 - 2;
         }else{
-            showTurn.textContent =  `Round ${counter/4} : ${currentTurn} to move`;
+            showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
         }
     };
     FEN.value = '';
