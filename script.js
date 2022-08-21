@@ -62,7 +62,7 @@ function init() {
         if(item.hasChildNodes()){
             removePiece(item.dataset.row, item.dataset.column)
         }
-    })
+    });
     createPiece('rook', 'red', 1, 1);
     createPiece('rook', 'red', 1, 9);
     createPiece('rook', 'black', 10, 1);
@@ -95,7 +95,9 @@ function init() {
     createPiece('advisor','black',10,6)
     createPiece('king','red',1,5)
     createPiece('king','black',10,5)
-    counter = 4
+    counter = 4;
+    isRed = true;
+    currentTurn = (isRed ? 'red' : 'black');
     showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
 }
 
@@ -559,128 +561,136 @@ function setAvailablePath(name){
 }
 
 // read FEN string
-const FENinput = document.querySelector('#generateFEN')
+const FENinput = document.querySelector('#readFEN')
 
 FENinput.addEventListener('click', function(){
-    removeGreenColor();
-    removeBlueColor();
-    square.forEach(item => {                            //clearing the original pieces
-        if(item.hasChildNodes()){
-            removePiece(item.dataset.row, item.dataset.column)
-        }
-    });
-    let FEN = document.querySelector('#FEN');
-    const piecesOnBoard = FEN.value.split(/[/]/);
-    const lastItem = piecesOnBoard[9].split(' ');
-    piecesOnBoard.pop();
-    piecesOnBoard.push(lastItem[0])
-    // the first item would be row 10
-    piecesOnBoard.reverse();
-    function isUpperCase(item){
-        if(item == item.toUpperCase()){
-            return true
-        }
-    };
-    for(let i = 0 ; i <= 9 ; i++){
-        const row = piecesOnBoard[i].split('');  // looking up each row
-        let columnNumber = 1;
-        row.forEach(item => {
-            if(isNaN(item)){        // if the item is not a number, i.e. it is a piece
-                if(isUpperCase(item)){ // if it is in uppercase, i.e. it is red
-                    switch(item){
-                        case 'C' :
-                            createPiece('cannon','red',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'R' :
-                            createPiece('rook','red',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'N' :
-                            createPiece('knight','red',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'P' :
-                            createPiece('pawn','red',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break; 
-                        case 'A' :
-                            createPiece('advisor','red',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'B' :
-                            createPiece('bishop','red',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            console.log(columnNumber)
-                            break;
-                        case 'K' :
-                            createPiece('king','red',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                    }
-                    // console.log('Uppercase piece',item)
-                }else{
-                    switch(item){
-                        case 'c' :
-                            createPiece('cannon','black',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'r' :
-                            createPiece('rook','black',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'n' :
-                            createPiece('knight','black',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'p' :
-                            createPiece('pawn','black',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break; 
-                        case 'a' :
-                            createPiece('advisor','black',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'b' :
-                            createPiece('bishop','black',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                        case 'k' :
-                            createPiece('king','black',parseInt(i+1),columnNumber);
-                            columnNumber+=1;
-                            break;
-                    }
-                    // console.log('lowercase piece',item)
-                }
-            }else{
-                if(columnNumber + parseInt(item) <= 9){
-                    columnNumber = columnNumber + parseInt(item);
-                    console.log('number',columnNumber,parseInt(item))
-                }
+    let FEN = document.querySelector('#FENinput');
+    if(FEN.value){
+        removeGreenColor();
+        removeBlueColor();
+        square.forEach(item => {                            //clearing the original pieces
+            if(item.hasChildNodes()){
+                removePiece(item.dataset.row, item.dataset.column)
             }
-        })
-    };
-
-    if(lastItem[1] == 'w' || !lastItem[1]){
-        isRed = true
-        currentTurn = (isRed ? 'red' : 'black');
-        if(lastItem[5]){
-            showTurn.textContent =  `Round ${parseInt(lastItem[5])+1} : ${currentTurn} to move`;
-            counter = parseInt(lastItem[5])*4;
+        });
+        
+        const piecesOnBoard = FEN.value.split(/[/]/);
+        const lastItem = piecesOnBoard[9].split(' ');
+        piecesOnBoard.pop();
+        piecesOnBoard.push(lastItem[0])
+        // the first item would be row 10
+        piecesOnBoard.reverse();
+        function isUpperCase(item){
+            if(item == item.toUpperCase()){
+                return true
+            }
+        };
+        for(let i = 0 ; i <= 9 ; i++){
+            const row = piecesOnBoard[i].split('');  // looking up each row
+            let columnNumber = 1;
+            row.forEach(item => {
+                if(isNaN(item)){        // if the item is not a number, i.e. it is a piece
+                    if(isUpperCase(item)){ // if it is in uppercase, i.e. it is red
+                        switch(item){
+                            case 'C' :
+                                createPiece('cannon','red',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'R' :
+                                createPiece('rook','red',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'N' :
+                                createPiece('knight','red',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'P' :
+                                createPiece('pawn','red',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break; 
+                            case 'A' :
+                                createPiece('advisor','red',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'B' :
+                                createPiece('bishop','red',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                console.log(columnNumber)
+                                break;
+                            case 'K' :
+                                createPiece('king','red',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                        }
+                        // console.log('Uppercase piece',item)
+                    }else{
+                        switch(item){
+                            case 'c' :
+                                createPiece('cannon','black',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'r' :
+                                createPiece('rook','black',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'n' :
+                                createPiece('knight','black',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'p' :
+                                createPiece('pawn','black',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break; 
+                            case 'a' :
+                                createPiece('advisor','black',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'b' :
+                                createPiece('bishop','black',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                            case 'k' :
+                                createPiece('king','black',parseInt(i+1),columnNumber);
+                                columnNumber+=1;
+                                break;
+                        }
+                        // console.log('lowercase piece',item)
+                    }
+                }else{
+                    if(columnNumber + parseInt(item) <= 9){
+                        columnNumber = columnNumber + parseInt(item);
+                        console.log('number',columnNumber,parseInt(item))
+                    }
+                }
+            })
+        };
+    
+        if(lastItem[1] == 'w' || !lastItem[1]){
+            isRed = true
+            currentTurn = (isRed ? 'red' : 'black');
+            if(lastItem[5]){
+                showTurn.textContent =  `Round ${parseInt(lastItem[5])+1} : ${currentTurn} to move`;
+                counter = parseInt(lastItem[5])*4;
+            }else{
+                showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
+            }
+    
         }else{
-            showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
-        }
+            isRed = false
+            currentTurn = (isRed ? 'red' : 'black');
+            if(lastItem[5]){
+                showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
+                counter = (parseInt(lastItem[5])+1)*4 - 2;
+            }else{
+                showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
+            }
+        };
+        FEN.value = '';
+    }
 
-    }else{
-        isRed = false
-        currentTurn = (isRed ? 'red' : 'black');
-        if(lastItem[5]){
-            showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
-            counter = (parseInt(lastItem[5])+1)*4 - 2;
-        }else{
-            showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
-        }
-    };
-    FEN.value = '';
 });
 
+const FENoutput = document.querySelector('#genFEN')
+FENoutput.addEventListener('click',function(){
+    console.log('FENoutput');
+})
