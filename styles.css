@@ -91,7 +91,9 @@ img{
     background-color: rgba(0, 0, 255, 0.3);
     border-radius: 50%;
 }
-
+.square.disabled{
+    cursor: disabled;
+}
 p{
     text-align: center;
     font-size: 20px;
