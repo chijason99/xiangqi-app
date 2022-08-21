@@ -136,8 +136,8 @@ function checkDanger(row,column){
     const horizontal = Array.from(document.querySelectorAll(`.square[data-row="${row}"]`));
 
     //threats from top
-    if(currentPiece.row < 10){
-        const piecesAbove = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) > currentPiece.row);
+    if(row < 10){
+        const piecesAbove = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) > row);
         piecesAbove.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-row')) - parseInt(b.firstElementChild.getAttribute('data-row'))) //from bottom to top
         if (piecesAbove.length > 0) {
             if(piecesAbove[0].firstElementChild.dataset.color != currentPiece.color){
@@ -165,8 +165,8 @@ function checkDanger(row,column){
         console.log(piecesAbove)
     };
         //threats from bottom
-        if(currentPiece.row > 1){
-            const piecesBelow = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) < currentPiece.row);
+        if(row > 1){
+            const piecesBelow = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) < row);
             piecesBelow.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-row')) - parseInt(a.firstElementChild.getAttribute('data-row'))) //from bottom to top
             if (piecesBelow.length > 0) {
                 if(piecesBelow[0].firstElementChild.dataset.color != currentPiece.color){
@@ -194,8 +194,8 @@ function checkDanger(row,column){
             console.log(piecesBelow)
         };
         //threats from the left
-        if(currentPiece.column > 1){
-            const piecesLeft = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) < currentPiece.column);
+        if(column > 1){
+            const piecesLeft = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) < column);
             piecesLeft.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-column')) - parseInt(a.firstElementChild.getAttribute('data-column'))); // sort from right to left
             if (piecesLeft.length > 0) {
                 if(piecesLeft[0].firstElementChild.dataset.color != currentPiece.color){
@@ -221,8 +221,8 @@ function checkDanger(row,column){
             }
         };
         //threats from the right
-        if(currentPiece.column < 9){
-            const piecesRight = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) > currentPiece.column);
+        if(column < 9){
+            const piecesRight = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) > column);
             piecesRight.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-column')) - parseInt(b.firstElementChild.getAttribute('data-column'))); // sort from left to right
             if (piecesRight.length > 0) {
                 if(piecesRight[0].firstElementChild.dataset.color != currentPiece.color){
@@ -247,8 +247,67 @@ function checkDanger(row,column){
                 }
             }
         };
-
-
+        // threats from the horse
+        const topLeftObstacle = document.querySelector(`.square[data-row="${row + 1}"][data-column="${column - 1}"]`)
+        const bottomLeftObstacle = document.querySelector(`.square[data-row="${row - 1}"][data-column="${column - 1}"]`)
+        const topRightObstacle = document.querySelector(`.square[data-row="${row + 1 }"][data-column="${column + 1}"]`)
+        const bottomRightObstacle = document.querySelector(`.square[data-row="${row - 1 }"][data-column="${column + 1}"]`)
+        function checkKnightSquare(x,y){
+            const target = document.querySelector(`.square[data-row="${x}"][data-column="${y}"]`)
+            if(target.hasChildNodes() && target.firstElementChild.dataset.piece == 'knight' && target.firstElementChild.dataset.color != currentPiece.color){
+                return true
+            }else{
+                return false
+            }
+        };
+        if(row < 9){
+            if(column > 1 && !topLeftObstacle.hasChildNodes() ){        // if no obstacle on the top left
+                if(checkKnightSquare(row + 2, column - 1)){
+                    markDanger(row, column)
+                }
+            };
+            if(column < 9 && !topRightObstacle.hasChildNodes()){        // if no obstacle on the top right
+                if(checkKnightSquare(row + 2, column + 1)){
+                    markDanger(row, column)
+                }
+            };
+        };
+        if(row > 2){
+            if(column > 1 && !bottomLeftObstacle.hasChildNodes()){        // if no obstacle on the bottom left
+                if(checkKnightSquare(row - 2, column - 1)){
+                    markDanger(row, column)
+                }
+            };
+            if(column < 9 && !bottomRightObstacle.hasChildNodes()){        // if no obstacle on the bottom right
+                if(checkKnightSquare(row - 2, column + 1)){
+                    markDanger(row, column)
+                }
+            };
+        };
+        if(column > 2){
+            if( row < 10 && !topLeftObstacle.hasChildNodes()){        // if no obstacle on the top left
+                if(checkKnightSquare(row + 1, column - 2)){
+                    markDanger(row, column)
+                }
+            };
+            if(row > 1 && !bottomLeftObstacle.hasChildNodes() ){        // if no obstacle on the bottom left
+                if(checkKnightSquare(row - 1, column - 2)){
+                    markDanger(row, column)
+                }
+            };
+        };
+        if(column < 8){
+            if(row < 10 && !topRightObstacle.hasChildNodes() ){        // if no obstacle on the top right
+                if(checkKnightSquare(row + 1, column + 2)){
+                    markDanger(row, column)
+                }
+            };
+            if(row > 1 && !bottomRightObstacle.hasChildNodes()){        // if no obstacle on the top right
+                if(checkKnightSquare(row - 1, column + 2)){
+                    markDanger(row, column)
+                }
+            };
+        };
 }
 function markDanger(row, column){
     document.querySelector(`.square[data-row="${row}"][data-column="${column}"]`).classList.add('danger')
@@ -625,7 +684,8 @@ function setAvailablePath(name){
                 if(currentPiece.row < 10){
                     markAvailableSpots(currentPiece.row + 1 , currentPiece.column + 2)
                 }
-            }
+            };
+            break;
     }
     let availableSquare = Array.from(document.querySelectorAll('.square.available'))     // remove the green color if there was a teammate
     availableSquare.forEach(item => {
