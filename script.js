@@ -55,10 +55,6 @@ function createPiece(name, color, row, column) {
     destination[0].appendChild(img)
 }
 
-const initButton = document.querySelector('#startPos');
-
-initButton.addEventListener('click',init);
-
 //movement of pieces
 function setCurrentPieceInfo(piece){  // record the data for the first click
     currentPiece.piece = piece.dataset.piece;
@@ -132,6 +128,81 @@ function movePieces(){
     }
     
 movePieces();
+
+//check danger squares for king
+
+function checkDanger(row,column){
+    const vertical = Array.from(document.querySelectorAll(`.square[data-column="${column}"]`));
+    const horizontal = Array.from(document.querySelectorAll(`.square[data-row="${row}"]`));
+
+    //threats from top
+    if(currentPiece.row < 10){
+        const piecesAbove = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) > currentPiece.row);
+        piecesAbove.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-row')) - parseInt(b.firstElementChild.getAttribute('data-row'))) //from bottom to top
+        if (piecesAbove.length > 0) {
+            if(piecesAbove[0].firstElementChild.dataset.color != currentPiece.color){
+                console.log('danger in front')
+                if(piecesAbove[0].firstElementChild.dataset.piece == 'rook' || piecesAbove[0].firstElementChild.dataset.piece == 'king'){
+                    markDanger(row, column)
+                };
+                if(piecesAbove[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                    if(currentPiece.color == 'red' && parseInt(piecesAbove[0].firstElementChild.dataset.row) == row + 1){
+                        markDanger(row,column)
+                    };
+                };
+            }else{
+                console.log('friends in front')
+            };
+            if(piecesAbove.length > 1){
+                if(piecesAbove[1].firstElementChild.dataset.color != currentPiece.color){
+                    if(piecesAbove[1].firstElementChild.dataset.piece == 'cannon'){
+                        markDanger(row,column)
+                    };
+                };
+            }
+        }
+        
+        console.log(piecesAbove)
+    };
+        //threats from bottom
+        if(currentPiece.row > 1){
+            const piecesBelow = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) < currentPiece.row);
+            piecesBelow.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-row')) - parseInt(a.firstElementChild.getAttribute('data-row'))) //from bottom to top
+            if (piecesBelow.length > 0) {
+                if(piecesBelow[0].firstElementChild.dataset.color != currentPiece.color){
+                    console.log('danger in below')
+                    if(piecesBelow[0].firstElementChild.dataset.piece == 'rook' || piecesBelow[0].firstElementChild.dataset.piece == 'king'){
+                        markDanger(row, column)
+                    };
+                    if(piecesBelow[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                        if(currentPiece.color == 'black' && parseInt(piecesBelow[0].firstElementChild.dataset.row) == row - 1){
+                            markDanger(row,column)
+                        };
+                    };
+                }else{
+                    console.log('friends in below')
+                };
+                if(piecesBelow.length > 1){
+                    if(piecesBelow[1].firstElementChild.dataset.color != currentPiece.color){
+                        if(piecesBelow[1].firstElementChild.dataset.piece == 'cannon'){
+                            markDanger(row,column)
+                        };
+                    };
+                }
+            }
+            
+            console.log(piecesBelow)
+        };
+        
+
+
+}
+function markDanger(row, column){
+    document.querySelector(`.square[data-row="${row}"][data-column="${column}"]`).classList.add('danger')
+}
+
+
+
 
 function setAvailablePath(name){
     const palace = {
@@ -321,7 +392,8 @@ function setAvailablePath(name){
                 }else if(piecesBelowBlackKing.length > 1 && piecesBelowBlackKing[0].firstElementChild.dataset.piece == 'king'){
                     markAvailableSpots(piecesBelowBlackKing[0].firstElementChild.dataset.row, piecesBelowBlackKing[0].firstElementChild.dataset.column)
                 }
-            };
+            }
+            checkDanger(currentPiece.row, currentPiece.column);
             ;
             break;
         case 'rook':
@@ -697,4 +769,55 @@ genFEN.addEventListener('click',function(){
     FEN = FEN.join('/')
     FENoutput.value = FEN;
     console.log(rowFEN,FEN);
-})
+});
+function init() {
+    removeGreenColor();
+    removeBlueColor();
+    square.forEach(item => {
+        if(item.hasChildNodes()){
+            removePiece(item.dataset.row, item.dataset.column)
+        }
+    });
+    createPiece('rook', 'red', 1, 1);
+    createPiece('rook', 'red', 1, 9);
+    createPiece('rook', 'black', 10, 1);
+    createPiece('rook', 'black', 10, 9);
+    createPiece('knight', 'red', 1, 2)
+    createPiece('knight', 'red', 1, 8)
+    createPiece('knight', 'black', 10, 2)
+    createPiece('knight', 'black', 10, 8)
+    createPiece('pawn','red',4,1)
+    createPiece('pawn','red',4,3)
+    createPiece('pawn','red',4,5)
+    createPiece('pawn','red',4,7)
+    createPiece('pawn','red',4,9)
+    createPiece('pawn','black',7,1)
+    createPiece('pawn','black',7,3)
+    createPiece('pawn','black',7,5)
+    createPiece('pawn','black',7,7)
+    createPiece('pawn','black',7,9)
+    createPiece('cannon','red',3,2)
+    createPiece('cannon','red',3,8)
+    createPiece('cannon','black',8,2)
+    createPiece('cannon','black',8,8)
+    createPiece('bishop','red',1,3)
+    createPiece('bishop','red',1,7)
+    createPiece('bishop','black',10,3)
+    createPiece('bishop','black',10,7)
+    createPiece('advisor','red',1,4)
+    createPiece('advisor','red',1,6)
+    createPiece('advisor','black',10,4)
+    createPiece('advisor','black',10,6)
+    createPiece('king','red',1,5)
+    createPiece('king','black',10,5)
+    counter = 4;
+    isRed = true;
+    currentTurn = (isRed ? 'red' : 'black');
+    showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
+    FENoutput.value = "";
+}
+
+init();
+const initButton = document.querySelector('#startPos');
+
+initButton.addEventListener('click',init);
