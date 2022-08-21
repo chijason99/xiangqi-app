@@ -86,7 +86,6 @@ function movePieces(){
             sqr.addEventListener('click',function(e1){
                     if(counter % 2 == 0 && (e1.target.dataset.color == currentTurn)){
                         if(sqr.hasChildNodes()){                   //first time clicking on pieces
-                            // console.log(e1.target);
                             setCurrentPieceInfo(e1.target);
                             setAvailablePath(currentPiece.piece)
                             counter+=1;                          // mark down there has already been a click on the board
@@ -104,6 +103,7 @@ function movePieces(){
                                 createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column)
                                 removeGreenColor(); 
                                 removeBlueColor();
+                                isChecked();
                                 counter+=1; 
                                 setNextTurn();
                             }
@@ -113,9 +113,10 @@ function movePieces(){
                             createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column);
                             removeGreenColor();
                             removeBlueColor();
+                            isChecked();
                             counter+=1; 
                             setNextTurn();
-                        }else if(!sqr.hasChildNodes() && !sqr.classList.contains('available')){
+                        }else if(!sqr.hasChildNodes() && !sqr.classList.contains('available')){ // click on somewhere else on the board
                             removeGreenColor();
                             removeBlueColor();
                             counter-=1;
@@ -130,7 +131,6 @@ function movePieces(){
 movePieces();
 
 //check danger squares for king
-
 function checkDanger(row,column){
     const vertical = Array.from(document.querySelectorAll(`.square[data-column="${column}"]`));
     const horizontal = Array.from(document.querySelectorAll(`.square[data-row="${row}"]`));
@@ -140,81 +140,68 @@ function checkDanger(row,column){
         const piecesAbove = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) > row);
         piecesAbove.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-row')) - parseInt(b.firstElementChild.getAttribute('data-row'))) //from bottom to top
         if (piecesAbove.length > 0) {
-            if(piecesAbove[0].firstElementChild.dataset.color != currentPiece.color){
-                console.log('danger in front')
+            if(piecesAbove[0].firstElementChild.dataset.color == currentPiece.color){
                 if(piecesAbove[0].firstElementChild.dataset.piece == 'rook' || piecesAbove[0].firstElementChild.dataset.piece == 'king'){
-                    markDanger(row, column)
+                    return true
                 };
                 if(piecesAbove[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
                     if(currentPiece.color == 'red' && parseInt(piecesAbove[0].firstElementChild.dataset.row) == row + 1){
-                        markDanger(row,column)
+                        return true
                     };
                 };
-            }else{
-                console.log('friends in front')
             };
             if(piecesAbove.length > 1){
-                if(piecesAbove[1].firstElementChild.dataset.color != currentPiece.color){
+                if(piecesAbove[1].firstElementChild.dataset.color == currentPiece.color){
                     if(piecesAbove[1].firstElementChild.dataset.piece == 'cannon'){
-                        markDanger(row,column)
+                        return true
                     };
                 };
             }
         }
-        
-        console.log(piecesAbove)
     };
         //threats from bottom
         if(row > 1){
             const piecesBelow = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) < row);
             piecesBelow.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-row')) - parseInt(a.firstElementChild.getAttribute('data-row'))) //from bottom to top
             if (piecesBelow.length > 0) {
-                if(piecesBelow[0].firstElementChild.dataset.color != currentPiece.color){
-                    console.log('danger in below')
+                if(piecesBelow[0].firstElementChild.dataset.color == currentPiece.color){
                     if(piecesBelow[0].firstElementChild.dataset.piece == 'rook' || piecesBelow[0].firstElementChild.dataset.piece == 'king'){
-                        markDanger(row, column)
+                        return true
                     };
                     if(piecesBelow[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
                         if(currentPiece.color == 'black' && parseInt(piecesBelow[0].firstElementChild.dataset.row) == row - 1){
-                            markDanger(row,column)
+                            return true
                         };
                     };
-                }else{
-                    console.log('friends in below')
                 };
                 if(piecesBelow.length > 1){
-                    if(piecesBelow[1].firstElementChild.dataset.color != currentPiece.color){
+                    if(piecesBelow[1].firstElementChild.dataset.color == currentPiece.color){
                         if(piecesBelow[1].firstElementChild.dataset.piece == 'cannon'){
-                            markDanger(row,column)
+                            return true
                         };
                     };
                 }
             }
-            
-            console.log(piecesBelow)
         };
         //threats from the left
         if(column > 1){
             const piecesLeft = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) < column);
             piecesLeft.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-column')) - parseInt(a.firstElementChild.getAttribute('data-column'))); // sort from right to left
             if (piecesLeft.length > 0) {
-                if(piecesLeft[0].firstElementChild.dataset.color != currentPiece.color){
-                    console.log('danger on the left')
+                if(piecesLeft[0].firstElementChild.dataset.color == currentPiece.color){
                     if(piecesLeft[0].firstElementChild.dataset.piece == 'rook'){
-                        markDanger(row, column)
+                        return true
                     };
                     if(piecesLeft[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
                         if(parseInt(piecesLeft[0].firstElementChild.dataset.column) == column - 1){
-                            markDanger(row,column)
+                            return true
                         };
                     };
-                }else{
-                    console.log('friends on the left')
                 };
                 if(piecesLeft.length > 1){
-                    if(piecesLeft[1].firstElementChild.dataset.color != currentPiece.color){
+                    if(piecesLeft[1].firstElementChild.dataset.color == currentPiece.color){
                         if(piecesLeft[1].firstElementChild.dataset.piece == 'cannon'){
-                            markDanger(row,column)
+                            return true
                         };
                     };
                 }
@@ -225,23 +212,20 @@ function checkDanger(row,column){
             const piecesRight = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) > column);
             piecesRight.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-column')) - parseInt(b.firstElementChild.getAttribute('data-column'))); // sort from left to right
             if (piecesRight.length > 0) {
-                if(piecesRight[0].firstElementChild.dataset.color != currentPiece.color){
-                    console.log('danger on the right')
+                if(piecesRight[0].firstElementChild.dataset.color == currentPiece.color){
                     if(piecesRight[0].firstElementChild.dataset.piece == 'rook'){
-                        markDanger(row, column)
+                        return true
                     };
                     if(piecesRight[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
                         if(parseInt(piecesRight[0].firstElementChild.dataset.column) == column + 1){
-                            markDanger(row,column)
+                            return true
                         };
                     };
-                }else{
-                    console.log('friends on the right')
                 };
                 if(piecesRight.length > 1){
-                    if(piecesRight[1].firstElementChild.dataset.color != currentPiece.color){
+                    if(piecesRight[1].firstElementChild.dataset.color == currentPiece.color){
                         if(piecesRight[1].firstElementChild.dataset.piece == 'cannon'){
-                            markDanger(row,column)
+                            return true
                         };
                     };
                 }
@@ -254,7 +238,7 @@ function checkDanger(row,column){
         const bottomRightObstacle = document.querySelector(`.square[data-row="${row - 1 }"][data-column="${column + 1}"]`)
         function checkKnightSquare(x,y){
             const target = document.querySelector(`.square[data-row="${x}"][data-column="${y}"]`)
-            if(target.hasChildNodes() && target.firstElementChild.dataset.piece == 'knight' && target.firstElementChild.dataset.color != currentPiece.color){
+            if(target.hasChildNodes() && target.firstElementChild.dataset.piece == 'knight' && target.firstElementChild.dataset.color == currentPiece.color){
                 return true
             }else{
                 return false
@@ -263,52 +247,67 @@ function checkDanger(row,column){
         if(row < 9){
             if(column > 1 && !topLeftObstacle.hasChildNodes() ){        // if no obstacle on the top left
                 if(checkKnightSquare(row + 2, column - 1)){
-                    markDanger(row, column)
+                    return true
                 }
             };
             if(column < 9 && !topRightObstacle.hasChildNodes()){        // if no obstacle on the top right
                 if(checkKnightSquare(row + 2, column + 1)){
-                    markDanger(row, column)
+                    return true
                 }
             };
         };
         if(row > 2){
             if(column > 1 && !bottomLeftObstacle.hasChildNodes()){        // if no obstacle on the bottom left
                 if(checkKnightSquare(row - 2, column - 1)){
-                    markDanger(row, column)
+                    return true
                 }
             };
             if(column < 9 && !bottomRightObstacle.hasChildNodes()){        // if no obstacle on the bottom right
                 if(checkKnightSquare(row - 2, column + 1)){
-                    markDanger(row, column)
+                    return true
                 }
             };
         };
         if(column > 2){
             if( row < 10 && !topLeftObstacle.hasChildNodes()){        // if no obstacle on the top left
                 if(checkKnightSquare(row + 1, column - 2)){
-                    markDanger(row, column)
+                    return true
                 }
             };
             if(row > 1 && !bottomLeftObstacle.hasChildNodes() ){        // if no obstacle on the bottom left
                 if(checkKnightSquare(row - 1, column - 2)){
-                    markDanger(row, column)
+                    return true
                 }
             };
         };
         if(column < 8){
             if(row < 10 && !topRightObstacle.hasChildNodes() ){        // if no obstacle on the top right
                 if(checkKnightSquare(row + 1, column + 2)){
-                    markDanger(row, column)
+                    return true
                 }
             };
             if(row > 1 && !bottomRightObstacle.hasChildNodes()){        // if no obstacle on the top right
                 if(checkKnightSquare(row - 1, column + 2)){
-                    markDanger(row, column)
+                    return true
                 }
             };
         };
 }
+function isChecked(){
+    if(isRed){
+        const blackKing = square.find(item => item.hasChildNodes() && item.firstElementChild.dataset.piece == 'king' && item.firstElementChild.dataset.color == 'black')
+        if (checkDanger(parseInt(blackKing.firstElementChild.dataset.row), parseInt(blackKing.firstElementChild.dataset.column))){
+            console.log('black king is being attacked')
+        }
+    }else{
+        const redKing = square.find(item => item.hasChildNodes() && item.firstElementChild.dataset.piece == 'king' && item.firstElementChild.dataset.color == 'red')
+        if(checkDanger(parseInt(redKing.firstElementChild.dataset.row), parseInt(redKing.firstElementChild.dataset.column))){
+            console.log('red king is being attacked')
+        }
+    }
+}
+
+
 function markDanger(row, column){
     document.querySelector(`.square[data-row="${row}"][data-column="${column}"]`).classList.add('danger')
 }
@@ -518,7 +517,7 @@ function setAvailablePath(name){
                     for(let i = parseInt(currentPiece.row) + 1 ; i <= parseInt(havePiece[0].firstElementChild.getAttribute('data-row')) ; i++ ){
                         markAvailableSpots( i , currentPiece.column )
                     };
-                    // if(havePiece[0].firstElementChild.getAttribute('data-color') != currentPiece.color){
+                    // if(havePiece[0].firstElementChild.getAttribute('data-color') == currentPiece.color){
                     //     markAvailableSpots(havePiece[0].firstElementChild.getAttribute('data-row'), havePiece[0].firstElementChild.getAttribute('data-column'))   //can be deleted because if the obstacle is a teammate,the color will be removed at the end
                     // };
                 }
@@ -560,7 +559,6 @@ function setAvailablePath(name){
             if(currentPiece.column > 1 ){  // if it is not on the left edge
                 const left = (horizontal.filter( item => parseInt(item.dataset.column) < parseInt(currentPiece.column))).sort((a,b) => parseInt(b.getAttribute('data-column')) - parseInt(a.getAttribute('data-column'))); // sort them from right to left
                 const havePiece = left.filter(item => item.hasChildNodes())
-                console.log(left,havePiece)
                 if(havePiece.length != 0){
                     for(let i = parseInt(currentPiece.column) - 1 ; i >= parseInt(havePiece[0].firstElementChild.getAttribute('data-column')) ; i-- ){
                         markAvailableSpots(currentPiece.row , i )
@@ -752,14 +750,12 @@ FENinput.addEventListener('click', function(){
                             case 'B' :
                                 createPiece('bishop','red',parseInt(i+1),columnNumber);
                                 columnNumber+=1;
-                                console.log(columnNumber)
                                 break;
                             case 'K' :
                                 createPiece('king','red',parseInt(i+1),columnNumber);
                                 columnNumber+=1;
                                 break;
                         }
-                        // console.log('Uppercase piece',item)
                     }else{
                         switch(item){
                             case 'c' :
@@ -796,7 +792,6 @@ FENinput.addEventListener('click', function(){
                 }else{
                     if(columnNumber + parseInt(item) <= 9){
                         columnNumber = columnNumber + parseInt(item);
-                        console.log('number',columnNumber,parseInt(item))
                     }
                 }
             })
@@ -881,7 +876,6 @@ genFEN.addEventListener('click',function(){
     }
     FEN = FEN.join('/')
     FENoutput.value = FEN;
-    console.log(rowFEN,FEN);
 });
 function init() {
     removeGreenColor();
