@@ -193,7 +193,60 @@ function checkDanger(row,column){
             
             console.log(piecesBelow)
         };
-        
+        //threats from the left
+        if(currentPiece.column > 1){
+            const piecesLeft = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) < currentPiece.column);
+            piecesLeft.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-column')) - parseInt(a.firstElementChild.getAttribute('data-column'))); // sort from right to left
+            if (piecesLeft.length > 0) {
+                if(piecesLeft[0].firstElementChild.dataset.color != currentPiece.color){
+                    console.log('danger on the left')
+                    if(piecesLeft[0].firstElementChild.dataset.piece == 'rook'){
+                        markDanger(row, column)
+                    };
+                    if(piecesLeft[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                        if(parseInt(piecesLeft[0].firstElementChild.dataset.column) == column - 1){
+                            markDanger(row,column)
+                        };
+                    };
+                }else{
+                    console.log('friends on the left')
+                };
+                if(piecesLeft.length > 1){
+                    if(piecesLeft[1].firstElementChild.dataset.color != currentPiece.color){
+                        if(piecesLeft[1].firstElementChild.dataset.piece == 'cannon'){
+                            markDanger(row,column)
+                        };
+                    };
+                }
+            }
+        };
+        //threats from the right
+        if(currentPiece.column < 9){
+            const piecesRight = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) > currentPiece.column);
+            piecesRight.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-column')) - parseInt(b.firstElementChild.getAttribute('data-column'))); // sort from left to right
+            if (piecesRight.length > 0) {
+                if(piecesRight[0].firstElementChild.dataset.color != currentPiece.color){
+                    console.log('danger on the right')
+                    if(piecesRight[0].firstElementChild.dataset.piece == 'rook'){
+                        markDanger(row, column)
+                    };
+                    if(piecesRight[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                        if(parseInt(piecesRight[0].firstElementChild.dataset.column) == column + 1){
+                            markDanger(row,column)
+                        };
+                    };
+                }else{
+                    console.log('friends on the right')
+                };
+                if(piecesRight.length > 1){
+                    if(piecesRight[1].firstElementChild.dataset.color != currentPiece.color){
+                        if(piecesRight[1].firstElementChild.dataset.piece == 'cannon'){
+                            markDanger(row,column)
+                        };
+                    };
+                }
+            }
+        };
 
 
 }
