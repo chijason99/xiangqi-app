@@ -55,10 +55,6 @@ function createPiece(name, color, row, column) {
     destination[0].appendChild(img)
 }
 
-const initButton = document.querySelector('#startPos');
-
-initButton.addEventListener('click',init);
-
 //movement of pieces
 function setCurrentPieceInfo(piece){  // record the data for the first click
     currentPiece.piece = piece.dataset.piece;
@@ -90,7 +86,6 @@ function movePieces(){
             sqr.addEventListener('click',function(e1){
                     if(counter % 2 == 0 && (e1.target.dataset.color == currentTurn)){
                         if(sqr.hasChildNodes()){                   //first time clicking on pieces
-                            // console.log(e1.target);
                             setCurrentPieceInfo(e1.target);
                             setAvailablePath(currentPiece.piece)
                             counter+=1;                          // mark down there has already been a click on the board
@@ -108,6 +103,7 @@ function movePieces(){
                                 createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column)
                                 removeGreenColor(); 
                                 removeBlueColor();
+                                isChecked();
                                 counter+=1; 
                                 setNextTurn();
                             }
@@ -117,9 +113,10 @@ function movePieces(){
                             createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column);
                             removeGreenColor();
                             removeBlueColor();
+                            isChecked();
                             counter+=1; 
                             setNextTurn();
-                        }else if(!sqr.hasChildNodes() && !sqr.classList.contains('available')){
+                        }else if(!sqr.hasChildNodes() && !sqr.classList.contains('available')){ // click on somewhere else on the board
                             removeGreenColor();
                             removeBlueColor();
                             counter-=1;
@@ -132,6 +129,191 @@ function movePieces(){
     }
     
 movePieces();
+
+//check danger squares for king
+function checkDanger(row,column){
+    const vertical = Array.from(document.querySelectorAll(`.square[data-column="${column}"]`));
+    const horizontal = Array.from(document.querySelectorAll(`.square[data-row="${row}"]`));
+
+    //threats from top
+    if(row < 10){
+        const piecesAbove = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) > row);
+        piecesAbove.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-row')) - parseInt(b.firstElementChild.getAttribute('data-row'))) //from bottom to top
+        if (piecesAbove.length > 0) {
+            if(piecesAbove[0].firstElementChild.dataset.color == currentPiece.color){
+                if(piecesAbove[0].firstElementChild.dataset.piece == 'rook' || piecesAbove[0].firstElementChild.dataset.piece == 'king'){
+                    return true
+                };
+                if(piecesAbove[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                    if(currentPiece.color == 'red' && parseInt(piecesAbove[0].firstElementChild.dataset.row) == row + 1){
+                        return true
+                    };
+                };
+            };
+            if(piecesAbove.length > 1){
+                if(piecesAbove[1].firstElementChild.dataset.color == currentPiece.color){
+                    if(piecesAbove[1].firstElementChild.dataset.piece == 'cannon'){
+                        return true
+                    };
+                };
+            }
+        }
+    };
+        //threats from bottom
+        if(row > 1){
+            const piecesBelow = vertical.filter(item => item.hasChildNodes() && parseInt(item.dataset.row) < row);
+            piecesBelow.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-row')) - parseInt(a.firstElementChild.getAttribute('data-row'))) //from bottom to top
+            if (piecesBelow.length > 0) {
+                if(piecesBelow[0].firstElementChild.dataset.color == currentPiece.color){
+                    if(piecesBelow[0].firstElementChild.dataset.piece == 'rook' || piecesBelow[0].firstElementChild.dataset.piece == 'king'){
+                        return true
+                    };
+                    if(piecesBelow[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                        if(currentPiece.color == 'black' && parseInt(piecesBelow[0].firstElementChild.dataset.row) == row - 1){
+                            return true
+                        };
+                    };
+                };
+                if(piecesBelow.length > 1){
+                    if(piecesBelow[1].firstElementChild.dataset.color == currentPiece.color){
+                        if(piecesBelow[1].firstElementChild.dataset.piece == 'cannon'){
+                            return true
+                        };
+                    };
+                }
+            }
+        };
+        //threats from the left
+        if(column > 1){
+            const piecesLeft = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) < column);
+            piecesLeft.sort((a,b) => parseInt(b.firstElementChild.getAttribute('data-column')) - parseInt(a.firstElementChild.getAttribute('data-column'))); // sort from right to left
+            if (piecesLeft.length > 0) {
+                if(piecesLeft[0].firstElementChild.dataset.color == currentPiece.color){
+                    if(piecesLeft[0].firstElementChild.dataset.piece == 'rook'){
+                        return true
+                    };
+                    if(piecesLeft[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                        if(parseInt(piecesLeft[0].firstElementChild.dataset.column) == column - 1){
+                            return true
+                        };
+                    };
+                };
+                if(piecesLeft.length > 1){
+                    if(piecesLeft[1].firstElementChild.dataset.color == currentPiece.color){
+                        if(piecesLeft[1].firstElementChild.dataset.piece == 'cannon'){
+                            return true
+                        };
+                    };
+                }
+            }
+        };
+        //threats from the right
+        if(column < 9){
+            const piecesRight = horizontal.filter(item => item.hasChildNodes() && parseInt(item.dataset.column) > column);
+            piecesRight.sort((a,b) => parseInt(a.firstElementChild.getAttribute('data-column')) - parseInt(b.firstElementChild.getAttribute('data-column'))); // sort from left to right
+            if (piecesRight.length > 0) {
+                if(piecesRight[0].firstElementChild.dataset.color == currentPiece.color){
+                    if(piecesRight[0].firstElementChild.dataset.piece == 'rook'){
+                        return true
+                    };
+                    if(piecesRight[0].firstElementChild.dataset.piece == 'pawn'){            // if there is an black pawn 1 step away in front(only applicable for red)
+                        if(parseInt(piecesRight[0].firstElementChild.dataset.column) == column + 1){
+                            return true
+                        };
+                    };
+                };
+                if(piecesRight.length > 1){
+                    if(piecesRight[1].firstElementChild.dataset.color == currentPiece.color){
+                        if(piecesRight[1].firstElementChild.dataset.piece == 'cannon'){
+                            return true
+                        };
+                    };
+                }
+            }
+        };
+        // threats from the horse
+        const topLeftObstacle = document.querySelector(`.square[data-row="${row + 1}"][data-column="${column - 1}"]`)
+        const bottomLeftObstacle = document.querySelector(`.square[data-row="${row - 1}"][data-column="${column - 1}"]`)
+        const topRightObstacle = document.querySelector(`.square[data-row="${row + 1 }"][data-column="${column + 1}"]`)
+        const bottomRightObstacle = document.querySelector(`.square[data-row="${row - 1 }"][data-column="${column + 1}"]`)
+        function checkKnightSquare(x,y){
+            const target = document.querySelector(`.square[data-row="${x}"][data-column="${y}"]`)
+            if(target.hasChildNodes() && target.firstElementChild.dataset.piece == 'knight' && target.firstElementChild.dataset.color == currentPiece.color){
+                return true
+            }else{
+                return false
+            }
+        };
+        if(row < 9){
+            if(column > 1 && !topLeftObstacle.hasChildNodes() ){        // if no obstacle on the top left
+                if(checkKnightSquare(row + 2, column - 1)){
+                    return true
+                }
+            };
+            if(column < 9 && !topRightObstacle.hasChildNodes()){        // if no obstacle on the top right
+                if(checkKnightSquare(row + 2, column + 1)){
+                    return true
+                }
+            };
+        };
+        if(row > 2){
+            if(column > 1 && !bottomLeftObstacle.hasChildNodes()){        // if no obstacle on the bottom left
+                if(checkKnightSquare(row - 2, column - 1)){
+                    return true
+                }
+            };
+            if(column < 9 && !bottomRightObstacle.hasChildNodes()){        // if no obstacle on the bottom right
+                if(checkKnightSquare(row - 2, column + 1)){
+                    return true
+                }
+            };
+        };
+        if(column > 2){
+            if( row < 10 && !topLeftObstacle.hasChildNodes()){        // if no obstacle on the top left
+                if(checkKnightSquare(row + 1, column - 2)){
+                    return true
+                }
+            };
+            if(row > 1 && !bottomLeftObstacle.hasChildNodes() ){        // if no obstacle on the bottom left
+                if(checkKnightSquare(row - 1, column - 2)){
+                    return true
+                }
+            };
+        };
+        if(column < 8){
+            if(row < 10 && !topRightObstacle.hasChildNodes() ){        // if no obstacle on the top right
+                if(checkKnightSquare(row + 1, column + 2)){
+                    return true
+                }
+            };
+            if(row > 1 && !bottomRightObstacle.hasChildNodes()){        // if no obstacle on the top right
+                if(checkKnightSquare(row - 1, column + 2)){
+                    return true
+                }
+            };
+        };
+}
+function isChecked(){
+    if(isRed){
+        const blackKing = square.find(item => item.hasChildNodes() && item.firstElementChild.dataset.piece == 'king' && item.firstElementChild.dataset.color == 'black')
+        if (checkDanger(parseInt(blackKing.firstElementChild.dataset.row), parseInt(blackKing.firstElementChild.dataset.column))){
+            console.log('black king is being attacked')
+        }
+    }else{
+        const redKing = square.find(item => item.hasChildNodes() && item.firstElementChild.dataset.piece == 'king' && item.firstElementChild.dataset.color == 'red')
+        if(checkDanger(parseInt(redKing.firstElementChild.dataset.row), parseInt(redKing.firstElementChild.dataset.column))){
+            console.log('red king is being attacked')
+        }
+    }
+}
+
+
+function markDanger(row, column){
+    document.querySelector(`.square[data-row="${row}"][data-column="${column}"]`).classList.add('danger')
+}
+
+
+
 
 function setAvailablePath(name){
     const palace = {
@@ -321,7 +503,8 @@ function setAvailablePath(name){
                 }else if(piecesBelowBlackKing.length > 1 && piecesBelowBlackKing[0].firstElementChild.dataset.piece == 'king'){
                     markAvailableSpots(piecesBelowBlackKing[0].firstElementChild.dataset.row, piecesBelowBlackKing[0].firstElementChild.dataset.column)
                 }
-            };
+            }
+            checkDanger(currentPiece.row, currentPiece.column);
             ;
             break;
         case 'rook':
@@ -334,7 +517,7 @@ function setAvailablePath(name){
                     for(let i = parseInt(currentPiece.row) + 1 ; i <= parseInt(havePiece[0].firstElementChild.getAttribute('data-row')) ; i++ ){
                         markAvailableSpots( i , currentPiece.column )
                     };
-                    // if(havePiece[0].firstElementChild.getAttribute('data-color') != currentPiece.color){
+                    // if(havePiece[0].firstElementChild.getAttribute('data-color') == currentPiece.color){
                     //     markAvailableSpots(havePiece[0].firstElementChild.getAttribute('data-row'), havePiece[0].firstElementChild.getAttribute('data-column'))   //can be deleted because if the obstacle is a teammate,the color will be removed at the end
                     // };
                 }
@@ -376,7 +559,6 @@ function setAvailablePath(name){
             if(currentPiece.column > 1 ){  // if it is not on the left edge
                 const left = (horizontal.filter( item => parseInt(item.dataset.column) < parseInt(currentPiece.column))).sort((a,b) => parseInt(b.getAttribute('data-column')) - parseInt(a.getAttribute('data-column'))); // sort them from right to left
                 const havePiece = left.filter(item => item.hasChildNodes())
-                console.log(left,havePiece)
                 if(havePiece.length != 0){
                     for(let i = parseInt(currentPiece.column) - 1 ; i >= parseInt(havePiece[0].firstElementChild.getAttribute('data-column')) ; i-- ){
                         markAvailableSpots(currentPiece.row , i )
@@ -500,7 +682,8 @@ function setAvailablePath(name){
                 if(currentPiece.row < 10){
                     markAvailableSpots(currentPiece.row + 1 , currentPiece.column + 2)
                 }
-            }
+            };
+            break;
     }
     let availableSquare = Array.from(document.querySelectorAll('.square.available'))     // remove the green color if there was a teammate
     availableSquare.forEach(item => {
@@ -567,14 +750,12 @@ FENinput.addEventListener('click', function(){
                             case 'B' :
                                 createPiece('bishop','red',parseInt(i+1),columnNumber);
                                 columnNumber+=1;
-                                console.log(columnNumber)
                                 break;
                             case 'K' :
                                 createPiece('king','red',parseInt(i+1),columnNumber);
                                 columnNumber+=1;
                                 break;
                         }
-                        // console.log('Uppercase piece',item)
                     }else{
                         switch(item){
                             case 'c' :
@@ -611,7 +792,6 @@ FENinput.addEventListener('click', function(){
                 }else{
                     if(columnNumber + parseInt(item) <= 9){
                         columnNumber = columnNumber + parseInt(item);
-                        console.log('number',columnNumber,parseInt(item))
                     }
                 }
             })
@@ -696,5 +876,55 @@ genFEN.addEventListener('click',function(){
     }
     FEN = FEN.join('/')
     FENoutput.value = FEN;
-    console.log(rowFEN,FEN);
-})
+});
+function init() {
+    removeGreenColor();
+    removeBlueColor();
+    square.forEach(item => {
+        if(item.hasChildNodes()){
+            removePiece(item.dataset.row, item.dataset.column)
+        }
+    });
+    createPiece('rook', 'red', 1, 1);
+    createPiece('rook', 'red', 1, 9);
+    createPiece('rook', 'black', 10, 1);
+    createPiece('rook', 'black', 10, 9);
+    createPiece('knight', 'red', 1, 2)
+    createPiece('knight', 'red', 1, 8)
+    createPiece('knight', 'black', 10, 2)
+    createPiece('knight', 'black', 10, 8)
+    createPiece('pawn','red',4,1)
+    createPiece('pawn','red',4,3)
+    createPiece('pawn','red',4,5)
+    createPiece('pawn','red',4,7)
+    createPiece('pawn','red',4,9)
+    createPiece('pawn','black',7,1)
+    createPiece('pawn','black',7,3)
+    createPiece('pawn','black',7,5)
+    createPiece('pawn','black',7,7)
+    createPiece('pawn','black',7,9)
+    createPiece('cannon','red',3,2)
+    createPiece('cannon','red',3,8)
+    createPiece('cannon','black',8,2)
+    createPiece('cannon','black',8,8)
+    createPiece('bishop','red',1,3)
+    createPiece('bishop','red',1,7)
+    createPiece('bishop','black',10,3)
+    createPiece('bishop','black',10,7)
+    createPiece('advisor','red',1,4)
+    createPiece('advisor','red',1,6)
+    createPiece('advisor','black',10,4)
+    createPiece('advisor','black',10,6)
+    createPiece('king','red',1,5)
+    createPiece('king','black',10,5)
+    counter = 4;
+    isRed = true;
+    currentTurn = (isRed ? 'red' : 'black');
+    showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
+    FENoutput.value = "";
+}
+
+init();
+const initButton = document.querySelector('#startPos');
+
+initButton.addEventListener('click',init);
