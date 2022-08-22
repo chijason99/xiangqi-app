@@ -918,7 +918,7 @@ genFEN.addEventListener('click',function(){
         FEN[9] = [FEN[9]+ ' b']
     }
     FEN = FEN.join('/')
-    alert(FEN);
+    prompt('Copy the FEN below',FEN);
 });
 
 //game record
@@ -1039,6 +1039,7 @@ function convertChinese(){
                         break;
                     case '4':
                         step[1] = '四';
+                        break;
                     case '5':
                         step[1] = '五';
                         break;
@@ -1078,6 +1079,7 @@ function convertChinese(){
                         break;
                     case '4':
                         step[3] = '四';
+                        break;
                     case '5':
                         step[3] = '五';
                         break;
@@ -1142,7 +1144,7 @@ function convertChinese(){
     chinese.forEach((item,index) => {
         chineseStr += `${index + 1}. ${item.join(' ')} `
     })
-    alert(chineseStr)
+    prompt('Copy this and paste it to CC Bridge', chineseStr)
 }
 convertBtn.addEventListener('click',convertChinese)
 
