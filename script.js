@@ -865,8 +865,8 @@ FENinput.addEventListener('click', function(){
 
 });
 
+// output the FEN of the board
 const genFEN = document.querySelector('#genFEN')
-const FENoutput = document.querySelector('#FENoutput')
 genFEN.addEventListener('click',function(){
     const rowFEN = {};
     function extractPiece(piece,color){
@@ -918,7 +918,7 @@ genFEN.addEventListener('click',function(){
         FEN[9] = [FEN[9]+ ' b']
     }
     FEN = FEN.join('/')
-    FENoutput.value = FEN;
+    alert(FEN);
 });
 
 //game record
@@ -942,7 +942,7 @@ function printGameRecord(){
             }else if(currentPiece.row > destination.row){ // forward for black
                 move[Math.floor(counter/4) - 1].push([`${piece}${currentPiece.column}+${Math.abs(parseInt(destination.row)-currentPiece.row)}`]) ;
             }else if(currentPiece.row == destination.row){
-                move[Math.floor(counter/4) - 1].push([ `${piece}${currentPiece.column}=${destination.column}`]);
+                move[Math.floor(counter/4) - 1].push([`${piece}${currentPiece.column}=${destination.column}`]);
             }
         }
     };
@@ -987,16 +987,164 @@ function printGameRecord(){
         }
         if(move.length != 0){
             move.forEach((item, index) => {
-                str += `<li> ${index + 1}${item.join(' ')} </li>`;
+                str += `<li> ${index + 1}.  ${item.join(' ')} </li>`;
             })
                 
             
             record.innerHTML = str
         }
         }
-    
+// moves in cc bridge format
+const convertBtn = document.querySelector('button.ccbridge')
 
-
+function convertChinese(){
+    const chinese = []
+    let chineseStr = ""
+    if(move.length > 0){
+        move.forEach((item,index) => {
+            if(item.length > 0){
+                const step = item[0][0].split('')
+                switch(step[0]){
+                    case 'C':
+                        step[0] = '炮'
+                        break;
+                    case 'R':
+                        step[0] = '車';
+                        break;
+                    case 'K':
+                        step[0] = '帥';
+                        break;
+                    case 'P':
+                        step[0] = '兵';;
+                        break;
+                    case 'E':
+                        step[0] = '相';
+                        break;
+                    case 'A':
+                        step[0] = '仕';
+                        break;
+                    case 'H':
+                        step[0] = '馬';
+                        break;
+                };
+                switch(step[1]){
+                    case '1':
+                        step[1] = '一'
+                        break;
+                    case '2':
+                        step[1] = '二';
+                        break;
+                    case '3':
+                        step[1] = '三';
+                        break;
+                    case '4':
+                        step[1] = '四';
+                    case '5':
+                        step[1] = '五';
+                        break;
+                    case '6':
+                        step[1] = '六';
+                        break;
+                    case '7':
+                        step[1] = '七';
+                        break;
+                    case '8':
+                        step[1] = '八';
+                        break;                    
+                    case '9':
+                        step[1] = '九';
+                        break;                
+                };
+                switch(step[2]){
+                    case '+':
+                        step[2] = '進'
+                        break;
+                    case '-':
+                        step[2] = '退';
+                        break;
+                    case '=':     
+                        step[2] = '平';
+                        break;         
+                };
+                switch(step[3]){
+                    case '1':
+                        step[3] = '一'
+                        break;
+                    case '2':
+                        step[3] = '二';
+                        break;
+                    case '3':
+                        step[3] = '三';
+                        break;
+                    case '4':
+                        step[3] = '四';
+                    case '5':
+                        step[3] = '五';
+                        break;
+                    case '6':
+                        step[3] = '六';
+                        break;
+                    case '7':
+                        step[3] = '七';
+                        break;
+                    case '8':
+                        step[3] = '八';
+                        break;                    
+                    case '9':
+                        step[3] = '九';
+                        break;                
+                };
+                const redStep = [step.join('')]
+                chinese[index] = []
+                chinese[index].push(redStep)
+            };
+            if(item.length == 2){
+                const step = item[1][0].split('');
+                switch(step[0]){
+                    case 'c':
+                        step[0] = '炮'
+                        break;
+                    case 'r':
+                        step[0] = '車';
+                        break;
+                    case 'k':
+                        step[0] = '將';
+                        break;
+                    case 'p':
+                        step[0] = '卒';
+                        break;
+                    case 'e':
+                        step[0] = '象';
+                        break;
+                    case 'a':
+                        step[0] = '士';
+                        break;
+                    case 'h':
+                        step[0] = '馬';
+                        break;
+                };
+                switch(step[2]){
+                    case '+':
+                        step[2] = '進'
+                        break;
+                    case '-':
+                        step[2] = '退';
+                        break;
+                    case '=':     
+                        step[2] = '平';
+                        break;         
+                };
+                const blackStep = [step.join('')]
+                chinese[index].push(blackStep)
+            }
+        })
+    }
+    chinese.forEach((item,index) => {
+        chineseStr += `${index + 1}. ${item.join(' ')} `
+    })
+    alert(chineseStr)
+}
+convertBtn.addEventListener('click',convertChinese)
 
 
 
@@ -1045,7 +1193,7 @@ function init() {
     isRed = true;
     currentTurn = (isRed ? 'red' : 'black');
     showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
-    FENoutput.value = '';
+    record.innerHTML = ""
 }
 
 init();
