@@ -921,7 +921,8 @@ genFEN.addEventListener('click',function(){
         FEN[9] = [FEN[9]+ ' b']
     }
     FEN = FEN.join('/')
-    prompt('Copy the FEN below',FEN);
+    navigator.clipboard.writeText(FEN);
+    alert('FEN copied to clipboard!')
 });
 
 //game record
@@ -1150,7 +1151,9 @@ function convertChinese(){
     chinese.forEach((item,index) => {
         chineseStr += `${index + 1}. ${item.join(' ')} `
     })
-    prompt('Copy this and paste it to CC Bridge', chineseStr)
+    navigator.clipboard.writeText(chineseStr)
+    alert('Chess game copied to clipboard!')
+
 }
 convertBtn.addEventListener('click',convertChinese)
 
