@@ -1200,6 +1200,7 @@ function init() {
     counter = 4;
     isRed = true;
     currentTurn = (isRed ? 'red' : 'black');
+    move.splice(0,move.length)
     showTurn.textContent =  `Round ${Math.floor(counter/4)} : ${currentTurn} to move`
     record.innerHTML = ""
 }
