@@ -5,9 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>Document</title>
+    <title>XiangQi App</title>
 </head>
 <body>
+    <h1>XiangQi App</h1>
     <p id="showTurn"></p>
     <div class="container">
         <div class="chessboard">
@@ -27,16 +28,18 @@
         </div>
         <div class="FEN">
             <ul id="record">
-                
             </ul>
             <input type="text" id="FENinput">
-            <button type="button" id="readFEN">Read FEN</button>
-            <input type="text" id="FENoutput">
+            <button type="button" id="readFEN">Read FEN</button><br>
             <button type="button" id="genFEN">Generate FEN</button>
             
         </div>
     </div>
-    <button id="startPos">Initialize</button>
+    <div class="others">
+        <button id="startPos">Initialize</button> 
+        <button type="button" class="ccbridge">CC Bridge format </button>
+    </div>
+
 
     <script src="script.js"></script>
 </body>
