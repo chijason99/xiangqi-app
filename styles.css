@@ -80,13 +80,9 @@ img{
     cursor: pointer;
     background-color: lightslategray;
 }
-.checked{
-    border: 3px solid red;
-    border-radius:50%;
-}
-.checked:hover{
-    cursor:disabled;
-}
+
+
+
 .current, .current:hover{
     background-color: rgba(0, 0, 255, 0.3);
     border-radius: 50%;
@@ -103,13 +99,13 @@ p{
 
 .container{
     display: flex;
-    align-items: center;
     justify-content: space-between;
     padding: 10px;
 }
 
 .FEN{
     width: 65%;
+    padding: 30px;
 }
 
 .FEN input{
@@ -124,4 +120,21 @@ p{
 
 .FEN button:hover{
     cursor: pointer;
+}
+
+.FEN ul{
+    width: 80%;
+    height: 50%;
+    padding: 10px 5px;
+    margin: 10px 5px;
+    margin-top: 70px;
+    border:1px solid black;
+    overflow-y: scroll;
+}
+.FEN ul, .FEN button, .FEN input{
+    border-radius: 5px;
+}
+
+.FEN ul li{
+    padding: 5px;
 }
