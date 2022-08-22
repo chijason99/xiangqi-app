@@ -97,7 +97,6 @@ function checkGameOver(){
     for(const info in currentPiece){
         delete currentPiece[info]
     };
-    console.log(validMoves)
     if(validMoves == 0){
         return true
     }else{
@@ -126,7 +125,8 @@ function movePieces(){
                                 setDestinationInfo(e1.target);
                                 removePiece(currentPiece.row,currentPiece.column);  // remove original piece
                                 removePiece(destination.row,destination.column);    // remove piece at destination(capture)
-                                createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column)
+                                createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column);
+                                printGameRecord();
                                 if(checkGameOver()){
                                     showTurn.textContent = `Game over, ${currentTurn.toUpperCase()} wins`
                                     removeBlueColor();
@@ -143,6 +143,7 @@ function movePieces(){
                             setDestinationInfo(e1.target);
                             removePiece(currentPiece.row,currentPiece.column);  // remove original piece
                             createPiece(currentPiece.piece,currentPiece.color,destination.row,destination.column);
+                            printGameRecord();
                             if(checkGameOver()){
                                 showTurn.textContent = `Game over, ${currentTurn.toUpperCase()} wins`
                                 removeBlueColor();
@@ -919,6 +920,87 @@ genFEN.addEventListener('click',function(){
     FEN = FEN.join('/')
     FENoutput.value = FEN;
 });
+
+//game record
+const record = document.querySelector('#record');
+const move = [];
+function printGameRecord(){
+    let str = "";
+    const genStraightLineMove = piece => {
+        if(currentPiece.color == 'red'){
+            move[Math.floor(counter/4) - 1] = [];
+            if(currentPiece.row < destination.row){      // forward for red
+                move[Math.floor(counter/4) - 1].push([`${piece.toUpperCase()}${10 - currentPiece.column}+${Math.abs(parseInt(destination.row)-currentPiece.row)}`]) ;
+            }else if(currentPiece.row > destination.row){ // backward for red
+                move[Math.floor(counter/4) - 1].push([`${piece.toUpperCase()}${10 - currentPiece.column}-${Math.abs(parseInt(destination.row)-currentPiece.row)}`]) ;
+            }else if(currentPiece.row == destination.row){
+                move[Math.floor(counter/4) - 1].push([`${piece.toUpperCase()}${10 - currentPiece.column}=${10 - destination.column}`]);
+            }
+        }else{
+            if(currentPiece.row < destination.row){      // backward for black
+                move[Math.floor(counter/4) - 1].push([`${piece}${currentPiece.column}-${Math.abs(parseInt(destination.row)-currentPiece.row)}`]) ;
+            }else if(currentPiece.row > destination.row){ // forward for black
+                move[Math.floor(counter/4) - 1].push([`${piece}${currentPiece.column}+${Math.abs(parseInt(destination.row)-currentPiece.row)}`]) ;
+            }else if(currentPiece.row == destination.row){
+                move[Math.floor(counter/4) - 1].push([ `${piece}${currentPiece.column}=${destination.column}`]);
+            }
+        }
+    };
+    const genDiagonalMove = piece => {
+        if(currentPiece.color == 'red'){
+            move[Math.floor(counter/4) - 1] = [];
+            if(currentPiece.row < destination.row){      // forward for red
+                move[Math.floor(counter/4) - 1].push([`${piece.toUpperCase()}${10 - currentPiece.column}+${10 - destination.column}`]) ;
+            }else if(currentPiece.row > destination.row){ // backward for red
+                move[Math.floor(counter/4) - 1].push([`${piece.toUpperCase()}${10 - currentPiece.column}-${10 - destination.column}`]) ;
+            }
+        }else{
+            if(currentPiece.row < destination.row){      // backward for black
+                move[Math.floor(counter/4) - 1].push([`${piece}${currentPiece.column}-${destination.column}`]) ;
+            }else if(currentPiece.row > destination.row){ // forward for black
+                move[Math.floor(counter/4) - 1].push([`${piece}${currentPiece.column}+${destination.column}`]) ;
+            }
+        }
+    };
+        switch(currentPiece.piece){
+            case 'cannon' :
+                genStraightLineMove('c');
+                break;
+            case 'rook' :
+                genStraightLineMove('r');
+                break;
+            case 'king' :
+                genStraightLineMove('k');
+                break;
+            case 'pawn' :
+                genStraightLineMove('p');
+                break;
+            case 'bishop' :
+                genDiagonalMove('e');
+                break;
+            case 'advisor' :
+                genDiagonalMove('a');
+                break;
+            case 'knight' :
+                genDiagonalMove('h');
+                break;   
+        }
+        if(move.length != 0){
+            move.forEach((item, index) => {
+                str += `<li> ${index + 1}${item.join(' ')} </li>`;
+            })
+                
+            
+            record.innerHTML = str
+        }
+        }
+    
+
+
+
+
+
+
 function init() {
     removeGreenColor();
     removeBlueColor();
