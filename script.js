@@ -740,7 +740,7 @@ function setAvailablePath(name){
 
 // read FEN string
 const FENinput = document.querySelector('#readFEN')
-
+const move = [];
 FENinput.addEventListener('click', function(){
     let FEN = document.querySelector('#FENinput');
     if(FEN.value){
@@ -843,22 +843,25 @@ FENinput.addEventListener('click', function(){
         if(lastItem[1] == 'w' || !lastItem[1]){
             isRed = true
             currentTurn = (isRed ? 'red' : 'black');
-            if(lastItem[5]){
-                showTurn.textContent =  `Round ${parseInt(lastItem[5])+1} : ${currentTurn} to move`;
-                counter = parseInt(lastItem[5])*4;
-            }else{
-                showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
-            }
+            // if(lastItem[5]){
+            //     showTurn.textContent =  `Round ${parseInt(lastItem[5])+1} : ${currentTurn} to move`;
+            //     counter = parseInt(lastItem[5])*4;
+            // }else{
+            //     showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
+            // }
     
         }else{
             isRed = false
             currentTurn = (isRed ? 'red' : 'black');
-            if(lastItem[5]){
-                showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
-                counter = (parseInt(lastItem[5])+1)*4 - 2;
-            }else{
-                showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
-            }
+            counter = 6;
+            move[0] = [];
+            move[0].push(['......'])
+            // if(lastItem[5]){
+            //     showTurn.textContent =  `Round ${lastItem[5]} : ${currentTurn} to move`;
+            //     counter = (parseInt(lastItem[5])+1)*4 - 2;
+            // }else{
+            //     showTurn.textContent =  `Round 1 : ${currentTurn} to move`;
+            // }
         };
         FEN.value = '';
     }
@@ -923,7 +926,6 @@ genFEN.addEventListener('click',function(){
 
 //game record
 const record = document.querySelector('#record');
-const move = [];
 function printGameRecord(){
     let str = "";
     const genStraightLineMove = piece => {
@@ -1099,7 +1101,11 @@ function convertChinese(){
                 const redStep = [step.join('')]
                 chinese[index] = []
                 chinese[index].push(redStep)
-            };
+            }//else if(item.length == 1 && currentTurn == 'black'){
+            //     const redStep = ['......'];
+            //     chinese[index] = []
+            //     chinese[index].push(redStep)
+            // };
             if(item.length == 2){
                 const step = item[1][0].split('');
                 switch(step[0]){
