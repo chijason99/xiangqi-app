@@ -29,7 +29,6 @@ function setNextTurn(){
 }
 
 const square = Array.from(document.querySelectorAll('.row .square'));
-
 // removing all the colored squares on board
 function removeGreenColor (){
     const availableSquare = square.filter( item => item.classList.contains('available')    )   //remove green color
@@ -117,7 +116,7 @@ function movePieces(){
                             setAvailablePath(currentPiece.piece)
                             counter+=1;                          // mark down there has already been a click on the board
                         }
-                    }else if(counter % 2 != 0){                   // On the second click
+                    }else if(counter % 2 != 0){             // On the second click
                         if(sqr.hasChildNodes()){                  // if the second target has a piece
                             if(sqr.firstElementChild.dataset.color == currentPiece.color){    //if selecting the piece with the same color
                                 removeGreenColor();
