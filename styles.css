@@ -53,6 +53,7 @@ table {
 body{
     background: #312e2b;
     color: white;
+    height: 100vh;
 }
 h1{
     text-align: center;
@@ -141,7 +142,7 @@ button:hover{
 
 .FEN ul{
     width: 30%;
-    height: 50%;
+    height: 200px;
     padding: 10px 5px;
     margin: 20px 5px;
     overflow-y: scroll;
